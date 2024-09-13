@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', (e) => {
     const numberOfPagesInput = document.getElementById('numberOfPages');
 	const fetchResultsBtn = document.getElementById('fetchResultsBtn');
+    const giveawayGrid = document.getElementById('giveawayGrid');
     
     numberOfPagesInput.addEventListener('click', (e) => {
     });
@@ -10,7 +11,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
         handleSubmit(val);
     });
 
-    let scrapedItems = [];
 
 	let handleSubmit = async (numOfPages) => {
 		try {
@@ -19,9 +19,28 @@ document.addEventListener('DOMContentLoaded', (e) => {
 				throw new Error('Response came back with errors. Try again later...');
 			}
 			const data = await response.json();
-			scrapedItems = data.items;
+
+            fillGiveawayGrid(data.items)
 		} catch (error) {
 			console.error('There was a problem with fetching the data...');
 		}
 	};
+
+    let fillGiveawayGrid = (data) => {
+        giveawayGrid.innerHTML = '';
+
+
+        data.forEach(item => {
+            let newEl = document.createElement('div');
+            newEl.classList.add('giveawayItem');
+
+            newEl.innerHTML = `<img src="${item.ImageURL}" alt="${item.Name}" />
+                    <div class="giveawayDesc">
+                        <a href="${item.URL}" target="_blank">${item.Name}</a>
+                        <span>expires on ${item.ExpirationDate}</span>
+                    </div>`;
+
+            giveawayGrid.appendChild(newEl);
+        });
+    }
 });

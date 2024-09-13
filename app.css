@@ -11,3 +11,40 @@ header h1 {
     white-space: pre!important;
     display: block;
 }
+
+#giveawayGrid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    padding: 2rem 0;
+}
+
+.giveawayItem {
+    background: #efefef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.giveawayItem span {
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.giveawayItem img {
+    width: 100%;
+    aspect-ratio: 2/1;
+    display: block;
+    object-fit: cover;
+}
+
+.giveawayItem .giveawayDesc {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.giveawayItem .giveawayDesc a {
+    font-weight: bold;
+    text-decoration: none;
+}
