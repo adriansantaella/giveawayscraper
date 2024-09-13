@@ -1,8 +1,8 @@
 [build]
-functions = "netlify/functions"
-publish = "public"
-command = "cd netlify/functions && go build -o scraper.exe main.go"
+    functions = "netlify/functions"
+    publish = "public"
+    command = "GOOS=linux go build -o main ./netlify/functions"
 
 [build.environment]
-GO111MODULE = "on"
-NETLIFY_BUILD_DEBUG = "true"
+    GO111MODULE = "on"
+    NETLIFY_BUILD_DEBUG = "true"

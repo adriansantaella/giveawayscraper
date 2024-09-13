@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/adriansantaella/giveawayscraper/scraper"
 )
 
 type APIResponse struct {
-	Items []scraper.Item `json:"items"`
+	Items []Item `json:"items"`
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +21,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	items, err := scraper.ScrapeData("https://www.giveawaybase.com/page/", numPages)
+	items, err := ScrapeData("https://www.giveawaybase.com/page/", numPages)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Scraping error: %v", err), http.StatusInternalServerError)
 		return
