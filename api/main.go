@@ -11,7 +11,7 @@ type APIResponse struct {
 	Items []Item `json:"items"`
 }
 
-func handleRequest(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	numofpages := r.URL.Query().Get("numpages")
 
 	numPages, err := strconv.Atoi(numofpages)
@@ -47,6 +47,6 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/scrape-data", handleRequest)
+	http.HandleFunc("/scrape-data", Handler)
 	http.ListenAndServe(":8080", nil)
 }
