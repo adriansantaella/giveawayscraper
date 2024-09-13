@@ -2,3 +2,7 @@
 functions = "netlify/functions"
 publish = "public"
 command = ""
+
+[build.environment]
+GO111MODULE = "on"
+NETLIFY_BUILD_DEBUG = "true"
