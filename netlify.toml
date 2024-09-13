@@ -1,7 +1,7 @@
 [build]
     functions = "netlify/functions"
     publish = "public"
-    command = "cd netlify/functions && go build ."
+    command = "GOOS=linux go build -mod=vendor -o main ./netlify/functions"
 
 [build.environment]
     GO111MODULE = "on"
