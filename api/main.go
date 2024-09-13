@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"encoding/json"
@@ -44,9 +44,4 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(jsonResp)
 
-}
-
-func main() {
-	http.HandleFunc("/scrape-data", Handler)
-	http.ListenAndServe(":8080", nil)
 }
