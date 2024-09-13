@@ -1,8 +1,23 @@
 {
     "version": 2,
-    "functions": {
-        "api/*.go": {
-            "runtime": "go1.x"
+    "builds": [
+        {
+            "src": "frontend/**/*",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "api/**/*.go",
+            "use": "@vercel/go"
         }
-    }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "/api/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/frontend/$1"
+        }
+    ]
 }
