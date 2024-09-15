@@ -38,7 +38,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	numPages, err := strconv.Atoi(numofpages)
 
 	if err != nil {
-		fmt.Printf("Error converting number of pages passed in: %v\n", err)
+		http.Error(w, fmt.Sprintf("Error converting number of pages passed in: %v", err), http.StatusBadRequest)
 		return
 	}
 
@@ -63,7 +63,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	w.Write(jsonResp)
+	if _, err := w.Write(jsonResp); err != nil {
+		http.Error(w, fmt.Sprintf("Error writing response: %v", err), http.StatusInternalServerError)
+	}
 
 }
 
