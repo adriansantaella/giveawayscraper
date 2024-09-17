@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
 	let handleSubmit = async (numOfPages) => {
 		try {
-			const response = await fetch(`http://localhost:8080/scrape-data?numpages=${numOfPages}`);
+			const response = await fetch(`https://giveawayscraper.vercel.app/api/scraper?numpages=${numOfPages}`);
 			if (!response.ok) {
 				throw new Error('Response came back with errors. Try again later...');
 			}
