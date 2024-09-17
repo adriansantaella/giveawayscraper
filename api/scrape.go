@@ -32,7 +32,8 @@ type APIResponse struct {
 	Items []Item `json:"items"`
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func Scrape(w http.ResponseWriter, r *http.Request) {
+
 	numofpages := r.URL.Query().Get("numpages")
 
 	numPages, err := strconv.Atoi(numofpages)

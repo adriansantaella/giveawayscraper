@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
 	let handleSubmit = async (numOfPages) => {
 		try {
-			const response = await fetch(`../api/scraper?numpages=${numOfPages}`);
+			const response = await fetch(`../api/scrape?numpages=${numOfPages}`);
 			if (!response.ok) {
 				throw new Error('Response came back with errors. Try again later...');
 			}
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
             fillGiveawayGrid(data.items)
 		} catch (error) {
-			console.error('There was a problem with fetching the data...');
+			console.error('There was a problem with fetching the data...', error);
 		}
 	};
 

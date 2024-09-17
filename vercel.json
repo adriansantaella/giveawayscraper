@@ -2,12 +2,12 @@
     "version": 2,
     "builds": [
         {
-            "src": "frontend/**/*",
-            "use": "@vercel/static"
-        },
-        {
             "src": "api/**/*.go",
             "use": "@vercel/go"
+        },
+        {
+            "src": "frontend/**/*",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
