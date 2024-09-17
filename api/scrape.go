@@ -32,8 +32,8 @@ type APIResponse struct {
 	Items []Item `json:"items"`
 }
 
-func Scrape(w http.ResponseWriter, r *http.Request) {
-
+func Handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Test")
 	numofpages := r.URL.Query().Get("numpages")
 
 	numPages, err := strconv.Atoi(numofpages)
@@ -67,6 +67,9 @@ func Scrape(w http.ResponseWriter, r *http.Request) {
 	if _, err := w.Write(jsonResp); err != nil {
 		http.Error(w, fmt.Sprintf("Error writing response: %v", err), http.StatusInternalServerError)
 	}
+
+	http.HandleFunc("/scrape", Handler)
+	http.ListenAndServe(":8080", nil)
 
 }
 

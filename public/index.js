@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
 	let handleSubmit = async (numOfPages) => {
 		try {
-			const response = await fetch(`../api/scrape?numpages=${numOfPages}`);
+			const response = await fetch(`http://localhost:8080/api/scrape?numpages=${numOfPages}`);
 			if (!response.ok) {
 				throw new Error('Response came back with errors. Try again later...');
 			}
