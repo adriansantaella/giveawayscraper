@@ -10,22 +10,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
         handleSubmit(val);
     });
 
-    let apiBaseUrl =
-        window.location.hostname === "localhost"
-            ? "http://localhost:8080"
-            : "https://giveawayscraper.vercel.app";
-
     let handleSubmit = async (numOfPages) => {
         try {
-            const response = await fetch(
-                `${apiBaseUrl}/api/scrape?numpages=${numOfPages}`,
-                {
-                    method: "GET",
-                    headers: { 
-                        "Content-Type": "application/json" 
-                    },
-                }
-            );
+            const response = await fetch(`/api/scrape?numpages=${numOfPages}`);
 
             if (!response.ok) {
                 throw new Error(

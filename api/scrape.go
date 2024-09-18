@@ -33,7 +33,6 @@ type APIResponse struct {
 }
 
 func Scrape(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Scraping data...")
 	// Handle preflight CORS request
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
