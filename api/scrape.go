@@ -106,6 +106,7 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 		imageUrl := e.ChildAttr(".attachment-full", "src")
 
 		entryTitle := e.ChildText(".entry-title")
+		fmt.Printf("Title: %s\n", entryTitle)
 
 		e.ForEach("p, h3", func(_ int, el *colly.HTMLElement) {
 
@@ -147,7 +148,7 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			fmt.Printf("Scraping page %d\n", i)
+			fmt.Printf("Scraping page %d\n from %s\n", i, url)
 			err := c.Visit(url + strconv.Itoa(i))
 			if err != nil {
 				fmt.Printf("Error visiting page %d: %v\n", i, err)
