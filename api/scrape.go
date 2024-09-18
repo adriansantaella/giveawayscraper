@@ -37,7 +37,7 @@ func Scrape(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.WriteHeader(http.StatusOK)
 		return
 	}
@@ -45,7 +45,7 @@ func Scrape(w http.ResponseWriter, r *http.Request) {
 	// Set CORS headers for actual request
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	numofpages := r.URL.Query().Get("numpages")
 
