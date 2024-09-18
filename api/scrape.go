@@ -57,7 +57,6 @@ func Scrape(w http.ResponseWriter, r *http.Request) {
 	}
 
 	items, err := ScrapeData("https://www.giveawaybase.com/page/", numPages)
-	fmt.Printf("items: %v\n", items)
 
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Scraping error: %v", err), http.StatusInternalServerError)
@@ -162,7 +161,7 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 	wg.Wait()
 	c.Wait()
 
-	fmt.Printf("Number of items collected: %d\n", len(items))
+	fmt.Printf("Number of items collected: %v\n", items)
 
 	return items, nil
 }

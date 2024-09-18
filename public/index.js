@@ -3,9 +3,18 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const fetchResultsBtn = document.getElementById("fetchResultsBtn");
     const giveawayGrid = document.getElementById("giveawayGrid");
 
+    
     numberOfPagesInput.addEventListener("click", (e) => {});
-
+    
     fetchResultsBtn.addEventListener("click", (e) => {
+        const spinner = document.createElement("div");
+        giveawayGrid.innerHTML = "";
+
+        spinner.classList.add("no-entries");
+        spinner.innerHTML = '<i class="fa-solid fa-spinner fa-pulse"></i>';
+        
+        giveawayGrid.appendChild(spinner);
+
         let val = numberOfPagesInput.value;
         handleSubmit(val);
     });
@@ -19,9 +28,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
                     "Response came back with errors. Try again later..."
                 );
             }
-            const data = await response.json();
+            
+            await response.json().then((data) => {
+                if(data) {
+                    fillGiveawayGrid(data.items);
+                } else {
+                    showEmptyResults();
+                }
+            });
 
-            fillGiveawayGrid(data.items);
         } catch (error) {
             console.error(
                 "There was a problem with fetching the data...",
@@ -46,4 +61,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
             giveawayGrid.appendChild(newEl);
         });
     };
+
+    let showEmptyResults = () => {
+        giveawayGrid.innerHTML = "";
+        const noEntries = document.createElement("div");
+        noEntries.classList.add("no-entries");
+        noEntries.innerText = "No entries found.";
+
+        giveawayGrid.appendChild(noEntries);
+    }
 });

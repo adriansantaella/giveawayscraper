@@ -48,3 +48,12 @@ header h1 {
     font-weight: bold;
     text-decoration: none;
 }
+
+.no-entries {
+    padding: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fefefe;
+    color: #666;
+}
