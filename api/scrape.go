@@ -97,10 +97,6 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 		c.Visit(e.Request.AbsoluteURL(link))
 	})
 
-	c.OnRequest(func(r *colly.Request) {
-		// fmt.Println("Visiting", r.URL.String())
-	})
-
 	c.OnHTML(".inside-article", func(e *colly.HTMLElement) {
 		// Loop over each child element with the class .child
 		isEligible := false
@@ -151,14 +147,16 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			pagenum := fmt.Sprintf("%d", i)
-			c.Visit(url + pagenum)
+			fmt.Printf("Visiting page %d\n", i) // Debug print
+			c.Visit(url + strconv.Itoa(i))
 		}(i)
 
 	}
 
 	wg.Wait()
 	c.Wait()
+
+	fmt.Printf("Number of items collected: %d\n", len(items)) // Debug print
 
 	return items, nil
 }
