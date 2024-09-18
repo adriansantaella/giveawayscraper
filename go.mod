@@ -2,7 +2,10 @@ module github.com/adriansantaella/giveawayscraper
 
 go 1.22.7
 
-require github.com/gocolly/colly v1.2.0
+require (
+	github.com/gocolly/colly v1.2.0
+	github.com/rs/cors v1.11.1
+)
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.3 // indirect

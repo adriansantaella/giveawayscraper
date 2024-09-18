@@ -32,8 +32,22 @@ type APIResponse struct {
 	Items []Item `json:"items"`
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Test")
+func Scrape(w http.ResponseWriter, r *http.Request) {
+	// Handle preflight CORS request
+	if r.Method == http.MethodOptions {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// Set CORS headers for actual request
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
 	numofpages := r.URL.Query().Get("numpages")
 
 	numPages, err := strconv.Atoi(numofpages)
@@ -59,17 +73,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	if _, err := w.Write(jsonResp); err != nil {
 		http.Error(w, fmt.Sprintf("Error writing response: %v", err), http.StatusInternalServerError)
 	}
-
-	http.HandleFunc("/scrape", Handler)
-	http.ListenAndServe(":8080", nil)
 
 }
 

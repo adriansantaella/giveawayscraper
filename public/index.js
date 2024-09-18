@@ -1,38 +1,54 @@
-document.addEventListener('DOMContentLoaded', (e) => {
-    const numberOfPagesInput = document.getElementById('numberOfPages');
-	const fetchResultsBtn = document.getElementById('fetchResultsBtn');
-    const giveawayGrid = document.getElementById('giveawayGrid');
-    
-    numberOfPagesInput.addEventListener('click', (e) => {
-    });
-    
-    fetchResultsBtn.addEventListener('click', (e) => {
+document.addEventListener("DOMContentLoaded", (e) => {
+    const numberOfPagesInput = document.getElementById("numberOfPages");
+    const fetchResultsBtn = document.getElementById("fetchResultsBtn");
+    const giveawayGrid = document.getElementById("giveawayGrid");
+
+    numberOfPagesInput.addEventListener("click", (e) => {});
+
+    fetchResultsBtn.addEventListener("click", (e) => {
         let val = numberOfPagesInput.value;
         handleSubmit(val);
     });
 
+    let apiBaseUrl =
+        window.location.hostname === "localhost"
+            ? "http://localhost:8080"
+            : "https://giveawayscraper.vercel.app";
 
-	let handleSubmit = async (numOfPages) => {
-		try {
-			const response = await fetch(`https://giveawayscraper.vercel.app:8080/api/scrape?numpages=${numOfPages}`);
-			if (!response.ok) {
-				throw new Error('Response came back with errors. Try again later...');
-			}
-			const data = await response.json();
+    let handleSubmit = async (numOfPages) => {
+        try {
+            const response = await fetch(
+                `${apiBaseUrl}/api/scrape?numpages=${numOfPages}`,
+                {
+                    method: "GET",
+                    headers: { 
+                        "Content-Type": "application/json" 
+                    },
+                }
+            );
 
-            fillGiveawayGrid(data.items)
-		} catch (error) {
-			console.error('There was a problem with fetching the data...', error);
-		}
-	};
+            if (!response.ok) {
+                throw new Error(
+                    "Response came back with errors. Try again later..."
+                );
+            }
+            const data = await response.json();
+
+            fillGiveawayGrid(data.items);
+        } catch (error) {
+            console.error(
+                "There was a problem with fetching the data...",
+                error
+            );
+        }
+    };
 
     let fillGiveawayGrid = (data) => {
-        giveawayGrid.innerHTML = '';
+        giveawayGrid.innerHTML = "";
 
-
-        data.forEach(item => {
-            let newEl = document.createElement('div');
-            newEl.classList.add('giveawayItem');
+        data.forEach((item) => {
+            let newEl = document.createElement("div");
+            newEl.classList.add("giveawayItem");
 
             newEl.innerHTML = `<img src="${item.ImageURL}" alt="${item.Name}" />
                     <div class="giveawayDesc">
@@ -42,5 +58,5 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
             giveawayGrid.appendChild(newEl);
         });
-    }
+    };
 });
