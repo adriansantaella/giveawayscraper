@@ -143,7 +143,7 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 
 	})
 
-	for i := 0; i < numofpages; i++ {
+	for i := 1; i < numofpages; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
