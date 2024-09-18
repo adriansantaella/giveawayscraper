@@ -147,8 +147,11 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			fmt.Printf("Visiting page %d\n", i) // Debug print
-			c.Visit(url + strconv.Itoa(i))
+			fmt.Printf("Scraping page %d\n", i)
+			err := c.Visit(url + strconv.Itoa(i))
+			if err != nil {
+				fmt.Printf("Error visiting page %d: %v\n", i, err)
+			}
 		}(i)
 
 	}
@@ -156,7 +159,7 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 	wg.Wait()
 	c.Wait()
 
-	fmt.Printf("Number of items collected: %d\n", len(items)) // Debug print
+	fmt.Printf("Number of items collected: %d\n", len(items))
 
 	return items, nil
 }
