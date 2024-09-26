@@ -81,7 +81,6 @@ func Scrape(w http.ResponseWriter, r *http.Request) {
 
 func ScrapeData(url string, numofpages int) ([]Item, error) {
 	defer func() {
-		fmt.Println("Cleanup")
 		items = items[:0] // Clear the slice when the function exits
 	}()
 
@@ -90,16 +89,18 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 	)
 
 	eligible := []string{"worldwide", "us", "north america", "everywhere"}
-
+	fmt.Printf("Eligible created %s", eligible)
 	var wg sync.WaitGroup
 
 	c.OnHTML("a.read-more", func(e *colly.HTMLElement) {
+		fmt.Println("first onhtml")
 		// grab the first READ MORE link from each page
 		link := e.Attr("href")
 		c.Visit(e.Request.AbsoluteURL(link))
 	})
 
 	c.OnHTML(".inside-article", func(e *colly.HTMLElement) {
+		fmt.Println("second onhtml")
 		// Loop over each child element with the class .child
 		isEligible := false
 		isExpired := true
