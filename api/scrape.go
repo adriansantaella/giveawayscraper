@@ -10,8 +10,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gocolly/colly"
+	"github.com/PuerkitoBio/goquery"
 )
+
+var wg sync.WaitGroup
+var eligible = []string{"worldwide", "us", "north america", "everywhere"}
 
 type Item struct {
 	ExpirationDate string
@@ -84,56 +87,97 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 		items = items[:0] // Clear the slice when the function exits
 	}()
 
-	c := colly.NewCollector(
-		colly.Async(true),
-	)
+	for i := 1; i <= numofpages; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			fmt.Printf("Scraping page %d\n from %s\n", i, url)
 
-	eligible := []string{"worldwide", "us", "north america", "everywhere"}
-	fmt.Printf("Eligible created %s", eligible)
-	var wg sync.WaitGroup
+			pageUrl := url + strconv.Itoa(i)
 
-	c.OnHTML("a.read-more", func(e *colly.HTMLElement) {
-		fmt.Println("first onhtml")
-		// grab the first READ MORE link from each page
-		link := e.Attr("href")
-		c.Visit(e.Request.AbsoluteURL(link))
+			resp, err := http.Get(pageUrl)
+			if err != nil {
+				fmt.Printf("Error visiting page %d: %v\n", i, err)
+				return
+			}
+			defer resp.Body.Close()
+
+			if resp.StatusCode != http.StatusOK {
+				fmt.Printf("HTTP request failed with status: %d\n", resp.StatusCode)
+				return
+			}
+
+			doc, err := goquery.NewDocumentFromReader(resp.Body)
+			if err != nil {
+				return
+			}
+
+			processPage(doc)
+		}(i)
+	}
+
+	wg.Wait()
+
+	return items, nil
+}
+
+func processPage(doc *goquery.Document) {
+	links := doc.Find("a.read-more")
+
+	links.Each(func(i int, s *goquery.Selection) {
+		href, _ := s.Attr("href")
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			visitLink(href)
+		}()
+
 	})
+}
 
-	c.OnHTML(".inside-article", func(e *colly.HTMLElement) {
-		fmt.Println("second onhtml")
-		// Loop over each child element with the class .child
+func visitLink(href string) {
+	linkDoc, err := goquery.NewDocument(href)
+	if err != nil {
+		fmt.Printf("Error fetching link: %v\n", err)
+		return
+	}
+
+	linkDoc.Find(".inside-article").Each(func(i int, article *goquery.Selection) {
 		isEligible := false
 		isExpired := true
 		link := ""
 		expires := ""
-		imageUrl := e.ChildAttr(".attachment-full", "src")
+		imageUrl, _ := article.Find(".attachment-full").Attr("src")
 
-		entryTitle := e.ChildText(".entry-title")
-		fmt.Printf("Title: %s\n", entryTitle)
+		entryTitle := article.Find(".entry-title").Text()
+		elements := article.Find("p, h3")
 
-		e.ForEach("p, h3", func(_ int, el *colly.HTMLElement) {
-
-			// Check value of eligibility
-			if strings.Contains(el.Text, "OPEN TO:") {
+		elements.Each(func(_ int, el *goquery.Selection) {
+			if strings.Contains(el.Text(), "OPEN TO:") {
 				for _, word := range eligible {
-					if strings.Contains(strings.ToLower(el.Text), word) {
+					if strings.Contains(strings.ToLower(el.Text()), word) {
 						isEligible = true
 					}
 				}
 			}
 
-			if strings.Contains(el.Text, "GIVEAWAY END") {
-				expires = el.Text[14:]
+			if strings.Contains(el.Text(), "GIVEAWAY END") {
+				expires = el.Text()[14:]
 				diff := parseAndCompareDate(expires)
 				if diff >= 0 {
 					isExpired = false
 				}
 			}
 
-			if strings.Contains(el.Text, "STEP 1") {
-				link = el.ChildAttr("span a", "href")
+			if strings.Contains(el.Text(), "STEP 1") {
+				child := el.Find("span a")
+				linkAttr, exists := child.Attr("href")
+				if !exists {
+					fmt.Println("href attribute not found")
+				} else {
+					link = linkAttr
+				}
 			}
-
 		})
 
 		if isEligible && !isExpired {
@@ -146,24 +190,6 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 		}
 
 	})
-
-	for i := 1; i <= numofpages; i++ {
-		wg.Add(1)
-		go func(i int) {
-			defer wg.Done()
-			fmt.Printf("Scraping page %d\n from %s\n", i, url)
-			err := c.Visit(url + strconv.Itoa(i))
-			if err != nil {
-				fmt.Printf("Error visiting page %d: %v\n", i, err)
-			}
-		}(i)
-
-	}
-
-	wg.Wait()
-	c.Wait()
-
-	return items, nil
 }
 
 func parseAndCompareDate(inputString string) int64 {
