@@ -92,7 +92,6 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 		go func(i int) {
 			defer wg.Done()
 			fmt.Printf("Scraping page %d\n from %s\n", i, url)
-
 			pageUrl := url + strconv.Itoa(i)
 
 			resp, err := http.Get(pageUrl)
@@ -101,6 +100,8 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 				return
 			}
 			defer resp.Body.Close()
+
+			fmt.Println(resp.StatusCode)
 
 			if resp.StatusCode != http.StatusOK {
 				fmt.Printf("HTTP request failed with status: %d\n", resp.StatusCode)
@@ -122,6 +123,8 @@ func ScrapeData(url string, numofpages int) ([]Item, error) {
 }
 
 func processPage(doc *goquery.Document) {
+	var pageItems []Item
+
 	links := doc.Find("a.read-more")
 
 	links.Each(func(i int, s *goquery.Selection) {
@@ -129,13 +132,14 @@ func processPage(doc *goquery.Document) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			visitLink(href)
+			visitLink(href, &pageItems)
 		}()
-
 	})
+
+	items = append(items, pageItems...)
 }
 
-func visitLink(href string) {
+func visitLink(href string, pageItems *[]Item) {
 	linkDoc, err := goquery.NewDocument(href)
 	if err != nil {
 		fmt.Printf("Error fetching link: %v\n", err)
@@ -181,12 +185,14 @@ func visitLink(href string) {
 		})
 
 		if isEligible && !isExpired {
-			items = append(items, Item{
+			item := Item{
 				ExpirationDate: expires,
 				Name:           entryTitle,
 				URL:            link,
 				ImageURL:       imageUrl,
-			})
+			}
+
+			*pageItems = append(*pageItems, item)
 		}
 
 	})
